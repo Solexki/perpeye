@@ -21,12 +21,12 @@ const sendShortSiganl = async (bot, chatId) => {
     .map((call) => {
       return `Symbol: ${call.symbol}\nCurrent Price: ${call.price}\nConfidence: ${call.confidence}/5\n`;
     })
-    .join("\n");
+    .join("\n.......................\n");
 
   //message +=
   bot.sendMessage(
     chatId,
-    `*⚠️Market conditions(3 lower + low volume) indicate a potential short opportunity. Please do your own research before proceeding*. \n\n${message}`,
+    `*🔻Market conditions indicate a potential short opportunity in:.*. \n\n${message} \n\n _⚠️Please do your own research before proceeding_`,
     { parse_mode: "Markdown" }
   );
 };
@@ -46,12 +46,12 @@ const sendLongSiganl = async (bot, chatId) => {
     .map((call) => {
       return `Symbol: ${call.symbol}\nCurrent Price: ${call.price}\n`;
     })
-    .join("\n");
+    .join("\n............................................\n");
 
   //message +=
   bot.sendMessage(
     chatId,
-    `*⚠️Market conditions(3 lower + low volume) indicate a potential short opportunity. Please do your own research before proceeding*. \n\n${message}`,
+    `*💹Market conditions indicate a potential short opportunity in. *. \n\n${message}\n\n _⚠️Please do your own research before proceeding_`,
     { parse_mode: "Markdown" }
   );
 };
