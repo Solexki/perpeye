@@ -10,4 +10,4 @@ app.get("/", (req, res) => res.sendStatus(200));
 setWebhook(app);
 
 const PORT = process.env.PORT || 500;
-app.listen(PORT, () => console.log("Server is listening on:", port));
+app.listen(PORT, () => console.log("Server is listening on:", PORT));
