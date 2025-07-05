@@ -5,6 +5,9 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
+  "engine": {
+    "node": ">=22.13.1"
+  },
   "keywords": [],
   "author": "",
   "license": "ISC",
