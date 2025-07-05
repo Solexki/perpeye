@@ -45,16 +45,14 @@ bot.onText(/\/start(.*)/, async (msg) => {
   const isPremium = msg.from.isPremium; // Default value, can be changed later
 
   const keyBoard = {
-    reply_markup: {
-      keyboard: [
-        ["Short Signal", "Long Signal"],
-        ["New Futures", "New Futures Shortable"],
-        ["Upcoming Futures", "Settings"],
-        ["Created with ❤️ by @solob"],
-      ],
-      resize_keyboard: true,
-      one_time_keyboard: false,
-    },
+    keyboard: [
+      ["Short Signal", "Long Signal"],
+      ["New Futures", "New Futures Shortable"],
+      ["Upcoming Futures", "Settings"],
+      ["Created with ❤️ by @solob"],
+    ],
+    resize_keyboard: true,
+    one_time_keyboard: false,
   };
   bot.sendMessage(
     chatId,
@@ -64,8 +62,8 @@ bot.onText(/\/start(.*)/, async (msg) => {
     )}_ 👋\n*Welcome!*\n\nHere, you’ll receive:\n\n• 📉 *Short* and 📈 *Long* trading signals every hour\n• 🆕 Alerts on new coin listings — *before and after they go live*\n• 🎯 Insights on *new listings that are shortable*\nLet’s help you trade smarter.`,
 
     {
-      keyBoard,
       parse_mode: "Markdown",
+      reply_markup: keyBoard,
     }
   );
   try {
