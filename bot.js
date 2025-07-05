@@ -58,8 +58,15 @@ bot.onText(/\/start(.*)/, async (msg) => {
   };
   bot.sendMessage(
     chatId,
-    `Hello ${username} 👋\nWelcome!\nHere, you’ll receive:\n\n• 📉 *Short* and 📈 *Long* trading signals every hour\n• 🆕 Alerts on new coin listings — *before and after they go live*\n• 🎯 Insights on *new listings that are shortable*\nLet’s help you trade smarter.`,
-    keyBoard
+    `Hello _${username.replace(
+      /_/g,
+      ""
+    )}_ 👋\n*Welcome!*\n\nHere, you’ll receive:\n\n• 📉 *Short* and 📈 *Long* trading signals every hour\n• 🆕 Alerts on new coin listings — *before and after they go live*\n• 🎯 Insights on *new listings that are shortable*\nLet’s help you trade smarter.`,
+
+    {
+      keyBoard,
+      parse_mode: "Markdown",
+    }
   );
   try {
     const [user, created] = await Users.findOrCreate({
@@ -191,10 +198,10 @@ bot.on("message", async (msg) => {
   } else if (messageText === "Mexc") {
     await upcomingFuturesMessage(bot, chatId, "Mexc");
   } else {
-    if (messageText !== "/start" || messageText !== "start")
+    if (messageText !== "/start")
       return bot.sendMessage(
         chatId,
-        "Please select an option from the keyboard."
+        "Please select an option from the keyboard. or use /start"
       );
   }
 });
