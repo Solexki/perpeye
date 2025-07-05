@@ -32,8 +32,6 @@ const getNewListingsTenMins = async () => {
   try {
     const now = new Date();
     const thirtyMinsAgo = new Date(now.getTime() - 40 * 60 * 1000);
-    console.log(thirtyMinsAgo);
-
     const listings = await Listings.findAll({
       where: {
         listingDate: {

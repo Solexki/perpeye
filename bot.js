@@ -56,7 +56,11 @@ bot.onText(/\/start(.*)/, async (msg) => {
       one_time_keyboard: false,
     },
   };
-  bot.sendMessage(chatId, `welcome ${username}`, keyBoard);
+  bot.sendMessage(
+    chatId,
+    `Hello ${username} 👋\nWelcome!\nHere, you’ll receive:\n\n• 📉 *Short* and 📈 *Long* trading signals every hour\n• 🆕 Alerts on new coin listings — *before and after they go live*\n• 🎯 Insights on *new listings that are shortable*\nLet’s help you trade smarter.`,
+    keyBoard
+  );
   try {
     const [user, created] = await Users.findOrCreate({
       where: { userId: chatId },
