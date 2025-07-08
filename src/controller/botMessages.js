@@ -58,7 +58,7 @@ const sendLongSiganl = async (bot, chatId) => {
 
 const upcomingFuturesMessage = async (bot, chatId, exchange = "all") => {
   const listings = await upcomingFutures();
-  if (listings.length < 1) {
+  if (!listings || listings.length < 1) {
     return bot.sendMessage(chatId, "No upcoming futures listings found.");
   }
 
