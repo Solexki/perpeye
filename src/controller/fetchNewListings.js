@@ -169,7 +169,7 @@ const fetchMexcListings = async () => {
 const fetchMexcListingsV2 = async () => {
   try {
     const { data } = await axios.get(
-      `https://futures.mexc.co/api/v1/contract/detail?type=all`,
+      `https://contract.mexc.com/api/v1/contract/detail`,
       {},
       {
         headers: {
@@ -195,7 +195,6 @@ const fetchMexcListingsV2 = async () => {
         (item) =>
           item.symbol.includes("USDT") &&
           item.displayNameEn.includes("PERPETUAL") &&
-          item.isNew &&
           item.openingTime > Date.now()
       )
       .map((item) => ({

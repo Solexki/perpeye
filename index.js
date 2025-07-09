@@ -9,5 +9,7 @@ app.use(express.json());
 app.get("/", (req, res) => res.sendStatus(200));
 setWebhook(app);
 
+require("./src/controller/pinger")();
+
 const PORT = process.env.PORT || 500;
 app.listen(PORT, () => console.log("Server is listening on:", PORT));

@@ -53,9 +53,9 @@ cron.schedule("6 * * * *", async () => {
   console.log("✅ Old listings removed.");
 });
 
-// This cron job will run every hour to fetch all listings and log them
+// This cron job will run every 30 min to fetch all listings and log them
 cron.schedule(
-  "0 * * * *",
+  "*/30 * * * *",
   async () => {
     try {
       const listings = await fetchAllListings();
