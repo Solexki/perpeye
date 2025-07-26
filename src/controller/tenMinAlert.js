@@ -1,5 +1,6 @@
 const { Op } = require("sequelize");
 const Listings = require("../model/listings");
+const sequelizeIntance = require("../startup/db");
 
 const sendTenMinAlert = async () => {};
 
@@ -38,8 +39,9 @@ const justListed = async () => {
   const tweentyFourHoursAgo = new Date(
     currentTime.getTime() - 24 * 60 * 60 * 1000
   );
-
+  let transaction;
   try {
+    transaction = await sequelizeIntance.transaction();
     const listings = await Listings.findAll({
       where: {
         listingDate: {
@@ -48,10 +50,12 @@ const justListed = async () => {
       },
       limit: 10,
       order: [["listingDate", "ASC"]],
+      transaction,
     });
 
     if (listings.length === 0) {
       console.log("No upcoming futures listings found.");
+      if (transaction) await transaction.rollback();
       return;
     }
     const listingData = listings.map((listing) => ({
@@ -65,9 +69,11 @@ const justListed = async () => {
       isFutures: listing.isFutures,
     }));
     console.log(listingData);
+    if (transaction) await transaction.commit();
     return listingData;
   } catch (error) {
     console.error("Error fetching and saving listings:", error);
+    if (transaction) await transaction.rollback();
   }
 };
 
@@ -75,8 +81,9 @@ const upcomingFutures = async () => {
   console.log(
     "Checking for upcoming futures listings in the next 10 minutes..."
   );
-
+  let transaction;
   try {
+    transaction = await sequelizeIntance.transaction();
     const listings = await Listings.findAll({
       where: {
         listingDate: {
@@ -89,6 +96,7 @@ const upcomingFutures = async () => {
 
     if (listings.length === 0) {
       console.log("No upcoming futures listings found.");
+      if (transaction) await transaction.rollback();
       return;
     }
     const listingData = listings.map((listing) => ({
@@ -102,9 +110,11 @@ const upcomingFutures = async () => {
       isFutures: listing.isFutures,
     }));
     console.log(listingData);
+    if (transaction) await transaction.commit();
     return listingData;
   } catch (error) {
     console.error("Error fetching and saving listings:", error);
+    if (transaction) await transaction.rollback();
   }
 };
 

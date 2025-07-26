@@ -20,6 +20,7 @@ const saveListings = async (listings, exchange) => {
           isShortable: true,
           isFutures: true,
         },
+        transaction,
       });
       if (created) {
         console.log(`New listing created: ${listing.title} `);

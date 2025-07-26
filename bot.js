@@ -10,6 +10,7 @@ const {
   sendTenMinsNewListingsMessage,
   signalAlert,
 } = require("./src/controller/botMessages");
+const sequelizeIntance = require("./src/startup/db");
 
 require("dotenv/config.js");
 
@@ -66,7 +67,9 @@ bot.onText(/\/start(.*)/, async (msg) => {
       reply_markup: keyBoard,
     }
   );
+  let transaction;
   try {
+    transaction = await sequelizeIntance.transaction();
     const [user, created] = await Users.findOrCreate({
       where: { userId: chatId },
       defaults: {
@@ -83,9 +86,11 @@ bot.onText(/\/start(.*)/, async (msg) => {
     } else {
       console.log(`User already exists: ${username}`);
     }
+    if (transaction) await transaction.commit();
     return user;
   } catch (error) {
     console.error("Error creating or finding user:", error);
+    if (transaction) await transaction.rollback();
   }
 });
 
