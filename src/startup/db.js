@@ -23,7 +23,7 @@ const sequelizeIntance = new Sequelize(
           : undefined,
     },
     pool: {
-      max: 10,
+      max: 20,
       min: 1,
       acquire: 30000,
       idle: 10000,
