@@ -2,7 +2,7 @@ const { Op } = require("sequelize");
 const Listings = require("../model/listings");
 const sequelizeIntance = require("../startup/db");
 
-const sendTenMinAlert = async () => {};
+
 
 const fetchAllListings = async () => {
   try {
@@ -68,7 +68,6 @@ const justListed = async () => {
       isShortable: listing.isShortable,
       isFutures: listing.isFutures,
     }));
-    console.log(listingData);
     if (transaction) await transaction.commit();
     return listingData;
   } catch (error) {
@@ -109,7 +108,7 @@ const upcomingFutures = async () => {
       isShortable: listing.isShortable,
       isFutures: listing.isFutures,
     }));
-    console.log(listingData);
+
     if (transaction) await transaction.commit();
     return listingData;
   } catch (error) {

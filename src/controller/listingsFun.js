@@ -17,9 +17,8 @@ const removeOldListing = async () => {
       },
       transaction,
     });
-    if (transaction) {
-      await transaction.commit();
-    }
+    if (transaction) await transaction.commit();
+    return;
   } catch (error) {
     console.error("Error removing old listings:", error);
     if (transaction) {

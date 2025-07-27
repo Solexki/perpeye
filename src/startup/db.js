@@ -13,11 +13,21 @@ const sequelizeIntance = new Sequelize(
       freezeTableName: true,
     },
     logging: false,
+    dialectOptions: {
+      ssl:
+        process.env.NODE_ENV === "production"
+          ? {
+              require: true,
+              rejectUnauthorized: false,
+            }
+          : undefined,
+    },
     pool: {
-      max: 5,
-      min: 0,
+      max: 10,
+      min: 1,
       acquire: 30000,
       idle: 10000,
+      evict: 10000,
     },
   }
 );
