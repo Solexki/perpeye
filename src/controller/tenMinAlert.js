@@ -118,7 +118,6 @@ const upcomingFutures = async () => {
 };
 
 module.exports = {
-  sendTenMinAlert,
   fetchAllListings,
   upcomingFutures,
   justListed,
