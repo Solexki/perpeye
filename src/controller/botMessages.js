@@ -105,12 +105,13 @@ const justListedFuturesMessage = async (bot, chatId) => {
   }
   const messageText = listings
     .map(({ title, id, exchange, listingDate }, index) => {
+      const parsedId = excapeMarkupV2(id);
       return `${index + 1}.  *${excapeMarkupV2(title).trim()}*\n[More info]: ${
         exchange === "Binance"
-          ? `https://www.binance.com/en/futures/${id}`
+          ? `https://www.binance.com/en/futures/${parsedId}`
           : exchange === "Bybit"
-          ? `https://www.bybit.com/en-US/trade/${id}`
-          : `https://www.mexc.com/markets/${id}`
+          ? `https://www.bybit.com/en-US/trade/${parsedId}`
+          : `https://www.mexc.com/markets/${parsedId}`
       }\n_Listed At:_ ${new Date(
         listingDate
       ).toLocaleString()}\n_Exchange:_ *${exchange}*\n`;
@@ -195,7 +196,9 @@ async function signalAlert(bot, siganls) {
     .map((item) => {
       return `${
         item.signalType === "long" ? "🟢" : "🔻"
-      } *${item.signal.toUpperCase()} SIGNAL* for *${item.symbol}*
+      } *${item.signal.toUpperCase()} SIGNAL* for *${excapeMarkupV2(
+        item.symbol
+      )}*
  *Current Price:* $${item.price}\n\n${
         item.signalType === "short"
           ? "🔻 _Market showing weakness: 3 lower highs + significant volume drop. Possible breakdown incoming._"
