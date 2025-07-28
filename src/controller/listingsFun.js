@@ -28,9 +28,7 @@ const removeOldListing = async () => {
 };
 
 const getNewListingsTenMins = async () => {
-  let transaction;
   try {
-    transaction = await sequelizeIntance.transaction();
     const now = new Date();
     const thirtyMinsAgo = new Date(now.getTime() - 40 * 60 * 1000);
     const listings = await Listings.findAll({
@@ -41,18 +39,16 @@ const getNewListingsTenMins = async () => {
       },
       limit: 10,
       order: [["listingDate", "ASC"]],
-      transaction,
     });
-    if (!listings || listings.length < 1) {
+    if (!listings.length) {
       console.log("No new listings found in the last 30 minutes.");
-      if (transaction) await transaction.rollback();
+
       return [];
     }
-    if (transaction) await transaction.commit();
+
     return listings;
   } catch (error) {
     console.error("Error fetching new listings:", error);
-    if (transaction) await transaction.rollback();
   }
 };
 
@@ -97,7 +93,7 @@ const analyzeNewLists = async () => {
 const notifyUserForNewListings = async () => {
   const now = new Date();
   const thirtyMinsFromNow = new Date(now.getTime() + 30 * 60 * 1000);
-  let transaction = await sequelizeIntance.transaction();
+
   const listings = await Listings.findAll({
     where: {
       listingDate: {
@@ -106,15 +102,14 @@ const notifyUserForNewListings = async () => {
     },
     limit: 10,
     order: [["listingDate", "ASC"]],
-    transaction,
   });
 
-  if (!listings || listings.length < 1) {
+  if (!listings.length) {
     console.log("No new listings found in the next 10 minutes.");
-    if (transaction) await transaction.rollback();
+
     return;
   }
-  if (transaction) await transaction.commit();
+
   return listings;
 };
 

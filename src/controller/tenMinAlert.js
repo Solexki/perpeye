@@ -1,6 +1,6 @@
 const { Op } = require("sequelize");
 const Listings = require("../model/listings");
-const sequelizeIntance = require("../startup/db");
+
 
 
 
@@ -28,7 +28,6 @@ const fetchAllListings = async () => {
       "Upcoming futures listings in the next 10 minutes:",
       upcomingListings
     );
-    // Here you can add code to send alerts, e.g., via email or messaging service
   } catch (error) {
     console.error("Error fetching and saving listings:", error);
   }
@@ -39,9 +38,8 @@ const justListed = async () => {
   const tweentyFourHoursAgo = new Date(
     currentTime.getTime() - 24 * 60 * 60 * 1000
   );
-  let transaction;
+
   try {
-    transaction = await sequelizeIntance.transaction();
     const listings = await Listings.findAll({
       where: {
         listingDate: {
@@ -50,12 +48,11 @@ const justListed = async () => {
       },
       limit: 10,
       order: [["listingDate", "ASC"]],
-      transaction,
     });
 
-    if (listings.length === 0) {
+    if (!listings.length) {
       console.log("No upcoming futures listings found.");
-      if (transaction) await transaction.rollback();
+
       return;
     }
     const listingData = listings.map((listing) => ({
@@ -68,11 +65,11 @@ const justListed = async () => {
       isShortable: listing.isShortable,
       isFutures: listing.isFutures,
     }));
-    if (transaction) await transaction.commit();
+
     return listingData;
   } catch (error) {
     console.error("Error fetching and saving listings:", error);
-    if (transaction) await transaction.rollback();
+    throw error;
   }
 };
 
@@ -80,9 +77,8 @@ const upcomingFutures = async () => {
   console.log(
     "Checking for upcoming futures listings in the next 10 minutes..."
   );
-  let transaction;
+
   try {
-    transaction = await sequelizeIntance.transaction();
     const listings = await Listings.findAll({
       where: {
         listingDate: {
@@ -93,9 +89,9 @@ const upcomingFutures = async () => {
       order: [["listingDate", "ASC"]],
     });
 
-    if (listings.length === 0) {
+    if (!listings.length) {
       console.log("No upcoming futures listings found.");
-      if (transaction) await transaction.rollback();
+
       return;
     }
     const listingData = listings.map((listing) => ({
@@ -109,11 +105,9 @@ const upcomingFutures = async () => {
       isFutures: listing.isFutures,
     }));
 
-    if (transaction) await transaction.commit();
     return listingData;
   } catch (error) {
     console.error("Error fetching and saving listings:", error);
-    if (transaction) await transaction.rollback();
   }
 };
 

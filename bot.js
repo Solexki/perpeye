@@ -1,6 +1,4 @@
 const telegramBot = require("node-telegram-bot-api");
-const Users = require("./src/model/users");
-
 const {
   sendShortSiganl,
   sendLongSiganl,
@@ -10,8 +8,7 @@ const {
   sendTenMinsNewListingsMessage,
   signalAlert,
 } = require("./src/controller/botMessages");
-const sequelizeIntance = require("./src/startup/db");
-
+const { createUserIfNotExists } = require("./src/controller/usersFun");
 require("dotenv/config.js");
 
 const botToken = process.env.BOT_TOKEN;
@@ -20,6 +17,7 @@ const bot = new telegramBot(botToken, { polling: false });
 const webhookPath = `/bot/${botToken}`;
 const webhookUrl = `${process.env.SERVER_URL}${webhookPath}`;
 
+//setup d webhook
 const setWebhook = async (app) => {
   app.post(webhookPath, (req, res) => {
     bot.processUpdate(req.body);
@@ -42,15 +40,15 @@ bot.onText(/\/start(.*)/, async (msg) => {
   const chatId = msg.chat.id;
   const firstName = msg.from.first_name;
   const lastName = msg.from.last_name;
-  const isAdmin = false; // Default value, can be changed later
-  const isPremium = msg.from.isPremium; // Default value, can be changed later
-
+  const isAdmin = false;
+  const isPremium = msg.from.isPremium || false;
+  const data = { username, firstName, lastName, isAdmin, isPremium, chatId };
   const keyBoard = {
     keyboard: [
       ["Short Signal", "Long Signal"],
       ["New Futures", "New Futures Shortable"],
       ["Upcoming Futures", "Settings"],
-      ["Created with ❤️ by @solob"],
+      ["Created with ❤️ by @solob_dev"],
     ],
     resize_keyboard: true,
     one_time_keyboard: false,
@@ -67,31 +65,7 @@ bot.onText(/\/start(.*)/, async (msg) => {
       reply_markup: keyBoard,
     }
   );
-  let transaction;
-  try {
-    transaction = await sequelizeIntance.transaction();
-    const [user, created] = await Users.findOrCreate({
-      where: { userId: chatId },
-      defaults: {
-        username,
-        firstName,
-        lastName,
-        isAdmin,
-        isPremium,
-      },
-    });
-
-    if (created) {
-      console.log(`New user created: ${username}`);
-    } else {
-      console.log(`User already exists: ${username}`);
-    }
-    if (transaction) await transaction.commit();
-    return user;
-  } catch (error) {
-    console.error("Error creating or finding user:", error);
-    if (transaction) await transaction.rollback();
-  }
+  await createUserIfNotExists(data);
 });
 
 //handle messages from the user

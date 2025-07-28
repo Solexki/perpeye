@@ -5,6 +5,7 @@ const {
   getNewListingsTenMins,
 } = require("./listingsFun");
 const { getUsers } = require("./usersFun");
+const { excapeMarkupV2 } = require("./utilFun");
 
 const sendShortSiganl = async (bot, chatId) => {
   //fetch now
@@ -19,7 +20,9 @@ const sendShortSiganl = async (bot, chatId) => {
   // Format the message to send
   const message = shortCall
     .map((call) => {
-      return `Symbol: ${call.symbol}\nCurrent Price: ${call.price}\nConfidence: ${call.confidence}/5\n`;
+      return `Symbol: ${excapeMarkupV2(call.symbol)}\nCurrent Price: ${
+        call.price
+      }\nConfidence: ${call.confidence}/5\n`;
     })
     .join("\n.......................\n");
 
@@ -44,7 +47,9 @@ const sendLongSiganl = async (bot, chatId) => {
   // Format the message to send
   const message = longCall
     .map((call) => {
-      return `Symbol: ${call.symbol}\nCurrent Price: ${call.price}\n`;
+      return `Symbol: ${excapeMarkupV2(call.symbol)}\nCurrent Price: ${
+        call.price
+      }\n`;
     })
     .join("\n............................................\n");
 
@@ -125,9 +130,9 @@ const sendNewListingsMessage = async (bot) => {
     if (!listings || listings.length < 1) return;
     const messageText = listings
       .map(({ symbol, exchange, listingDate }, index) => {
-        return `${
-          index + 1
-        }. *${symbol}*\n Will be listed soon.\nAt: ${listingDate.toLocaleString()}\n\n_Exchange:_ *${exchange}*\n [More info]: ${
+        return `${index + 1}. *${excapeMarkupV2(
+          symbol
+        )}*\n Will be listed soon.\nAt: ${listingDate.toLocaleString()}\n\n_Exchange:_ *${exchange}*\n [More info]: ${
           exchange === "Binance"
             ? `https://www.binance.com/en/futures/${symbol}`
             : exchange === "Bybit"
@@ -165,9 +170,9 @@ const sendTenMinsNewListingsMessage = async (bot) => {
   // Format the message to send
   const messageText = listings
     .map(({ symbol, exchange, listingDate }, index) => {
-      return `${
-        index + 1
-      }. *${symbol}*\n Was listed recently.\nAt: ${listingDate.toLocaleString()}\n\n_Exchange:_ *${exchange}*\n[More info]: ${
+      return `${index + 1}. *${excapeMarkupV2(
+        symbol
+      )}*\n Was listed recently.\nAt: ${listingDate.toLocaleString()}\n\n_Exchange:_ *${exchange}*\n[More info]: ${
         exchange === "Binance"
           ? `https://www.binance.com/en/futures/${symbol}`
           : exchange === "Bybit"

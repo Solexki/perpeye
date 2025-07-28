@@ -31,6 +31,7 @@ const saveListings = async (listings, exchange) => {
     if (transaction) {
       await transaction.commit();
     }
+    return;
   } catch (error) {
     console.error("Error saving listings:", error);
     if (transaction) {
