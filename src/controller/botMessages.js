@@ -105,9 +105,7 @@ const justListedFuturesMessage = async (bot, chatId) => {
   }
   const messageText = listings
     .map(({ title, id, exchange, listingDate }, index) => {
-      return `${index + 1}.  *${title
-        .replace(/_/g, "")
-        .trim()}*\n[More info]: ${
+      return `${index + 1}.  *${excapeMarkupV2(title).trim()}*\n[More info]: ${
         exchange === "Binance"
           ? `https://www.binance.com/en/futures/${id}`
           : exchange === "Bybit"

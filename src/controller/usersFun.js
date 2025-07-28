@@ -51,5 +51,5 @@ const createUserIfNotExists = async (data) => {
 };
 module.exports = {
   getUsers,
-  createdNewUser: createUserIfNotExists,
+  createUserIfNotExists,
 };
