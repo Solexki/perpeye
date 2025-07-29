@@ -129,14 +129,15 @@ const sendNewListingsMessage = async (bot) => {
     if (!listings || listings.length < 1) return;
     const messageText = listings
       .map(({ symbol, exchange, listingDate }, index) => {
-        return `${index + 1}. *${excapeMarkupV2(
-          symbol
-        )}*\n Will be listed soon.\nAt: ${listingDate.toLocaleString()}\n\n_Exchange:_ *${exchange}*\n [More info]: ${
+        const cleanSymbol = excapeMarkupV2(symbol);
+        return `${
+          index + 1
+        }. *${cleanSymbol}*\n Will be listed soon.\nAt: ${listingDate.toLocaleString()}\n\n_Exchange:_ *${exchange}*\n [More info]: ${
           exchange === "Binance"
-            ? `https://www.binance.com/en/futures/${symbol}`
+            ? `https://www.binance.com/en/futures/${cleanSymbol}`
             : exchange === "Bybit"
-            ? `https://www.bybit.com/en-US/trade/${symbol}`
-            : `https://www.mexc.com/markets/${symbol}`
+            ? `https://www.bybit.com/en-US/trade/${cleanSymbol}`
+            : `https://www.mexc.com/markets/${cleanSymbol}`
         }`;
       })
       .join("\n......................................\n\n");
@@ -169,14 +170,15 @@ const sendTenMinsNewListingsMessage = async (bot) => {
   // Format the message to send
   const messageText = listings
     .map(({ symbol, exchange, listingDate }, index) => {
-      return `${index + 1}. *${excapeMarkupV2(
-        symbol
-      )}*\n Was listed recently.\nAt: ${listingDate.toLocaleString()}\n\n_Exchange:_ *${exchange}*\n[More info]: ${
+      const cleanSymbol = excapeMarkupV2(symbol);
+      return `${
+        index + 1
+      }. *${cleanSymbol}*\n Was listed recently.\nAt: ${listingDate.toLocaleString()}\n\n_Exchange:_ *${exchange}*\n[More info]: ${
         exchange === "Binance"
-          ? `https://www.binance.com/en/futures/${symbol}`
+          ? `https://www.binance.com/en/futures/${cleanSymbol}`
           : exchange === "Bybit"
-          ? `https://www.bybit.com/en-US/trade/${symbol}`
-          : `https://www.mexc.com/markets/${symbol}`
+          ? `https://www.bybit.com/en-US/trade/${cleanSymbol}`
+          : `https://www.mexc.com/markets/${cleanSymbol}`
       }`;
     })
     .join("\n....................................\n\n");
@@ -212,7 +214,7 @@ async function signalAlert(bot, siganls) {
   for (const user of users) {
     const chatId = user.userId;
     if (!chatId) continue;
-
+ 
     //now send message to each user
     await bot.sendMessage(
       chatId,
