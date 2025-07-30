@@ -5,7 +5,7 @@ const {
   getNewListingsTenMins,
 } = require("./listingsFun");
 const { getUsers } = require("./usersFun");
-const { excapeMarkupV2 } = require("./utilFun");
+const excapeMarkupV2 = require("./utilFun");
 
 const sendShortSiganl = async (bot, chatId) => {
   //fetch now

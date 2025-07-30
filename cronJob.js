@@ -30,9 +30,6 @@ cron.schedule("0 * * * *", async () => {
           signal: signal,
           confidence: confidence,
         });
-        console.log(`✅ ${signal.toUpperCase()} added ${symbol}`);
-      } else {
-        console.log(`ℹ️ No signal for ${symbol}`);
       }
     } catch (err) {
       console.error(`❌ Error processing ${coin.symbol}:`, err.message);
@@ -40,7 +37,6 @@ cron.schedule("0 * * * *", async () => {
   }
   console.log("✅ Signal scan complete.\n");
   if (!signals || signals.length < 1) {
-    console.log("ℹ️ No significant signals detected at the moment.");
     return;
   }
   return await notifyUsersOfSignals(signals);
