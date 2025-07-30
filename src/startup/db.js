@@ -1,5 +1,16 @@
 const { Sequelize } = require("sequelize");
 
+//pool config
+const poolConfig = {
+  max: 20,
+  min: 1,
+  acquire: 30000,
+  idle: 10000,
+  evict: 10000,
+};
+
+
+
 const sequelizeIntance =
   process.env.NODE_ENV === "production"
     ? new Sequelize(process.env.DATABASE_URL, {
@@ -49,13 +60,7 @@ const sequelizeIntance =
                   }
                 : undefined,
           },
-          pool: {
-            max: 20,
-            min: 1,
-            acquire: 30000,
-            idle: 10000,
-            evict: 10000,
-          },
+          pool: poolConfig,
         }
       );
 
