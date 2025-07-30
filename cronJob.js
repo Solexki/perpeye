@@ -44,14 +44,14 @@ cron.schedule("0 * * * *", async () => {
 
 // This cron job will run every 6 hours to remove old listings
 // It will remove listings older than 48 hours
-cron.schedule("6 * * * *", async () => {
+cron.schedule("0 */12 * * *", async () => {
   await removeOldListing();
   console.log("✅ Old listings removed.");
 });
 
-// This cron job will run every 30 min to fetch all listings and log them
+// This cron job will run every hour to fetch all listings and log them
 cron.schedule(
-  "*/30 * * * *",
+  "5 * * * *",
   async () => {
     try {
       const listings = await fetchAllListings();
@@ -71,11 +71,11 @@ cron.schedule(
   }
 );
 
-//this cron job will run every ten minute to send notifications for new listings
-cron.schedule("*/20 * * * *", async () => {
+//this cron job will run every fourty minute to send notifications for new listings
+cron.schedule("*/40 * * * *", async () => {
   await sendNewListingsNotification();
 });
 
-cron.schedule("*/10 * * * *", async () => {
+cron.schedule("*/20 * * * *", async () => {
   await notifyUserOfTenMinAlert();
 });
