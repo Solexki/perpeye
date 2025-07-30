@@ -41,8 +41,6 @@ const getNewListingsTenMins = async () => {
       order: [["listingDate", "ASC"]],
     });
     if (!listings.length) {
-      console.log("No new listings found in the last 30 minutes.");
-
       return [];
     }
 
@@ -58,14 +56,12 @@ const analyzeNewLists = async () => {
     const listings = await getNewListingsTenMins();
 
     if (listings.length === 0) {
-      console.log("No new listings found in the last 30 minutes.");
       return;
     }
 
     for (const coin of listings) {
       const candleData = await getCandleData(coin.symbol);
       if (!candleData || candleData.length < 1) {
-        console.log(`No candle data available for ${coin.symbol}`);
         continue;
       }
       const latestCandle = candleData[candleData.length - 1];
@@ -78,11 +74,6 @@ const analyzeNewLists = async () => {
           confidence: confidence,
           message: `Signal detected for ${coin.symbol}: ${signal} with confidence ${confidence}. Please do your own research before proceeding.`,
         });
-        console.log(
-          `Signal detected for ${coin.symbol}: ${signal} with confidence ${confidence}`
-        );
-      } else {
-        console.log(`No significant signal for ${coin.symbol}`);
       }
     }
   } catch (error) {

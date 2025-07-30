@@ -11,7 +11,6 @@ const fetchAllListings = async () => {
       order: [["listingDate", "ASC"]],
     });
     if (listings.length === 0) {
-      console.log("No upcoming futures listings found.");
       return;
     }
     const currentTime = new Date();
@@ -21,13 +20,8 @@ const fetchAllListings = async () => {
       return listingTime >= currentTime && listingTime <= tenMinutesFromNow;
     });
     if (upcomingListings.length === 0) {
-      console.log("No upcoming futures listings in the next 10 minutes.");
       return;
     }
-    console.log(
-      "Upcoming futures listings in the next 10 minutes:",
-      upcomingListings
-    );
   } catch (error) {
     console.error("Error fetching and saving listings:", error);
   }
@@ -74,10 +68,6 @@ const justListed = async () => {
 };
 
 const upcomingFutures = async () => {
-  console.log(
-    "Checking for upcoming futures listings in the next 10 minutes..."
-  );
-
   try {
     const listings = await Listings.findAll({
       where: {
@@ -90,8 +80,6 @@ const upcomingFutures = async () => {
     });
 
     if (!listings.length) {
-      console.log("No upcoming futures listings found.");
-
       return;
     }
     const listingData = listings.map((listing) => ({
