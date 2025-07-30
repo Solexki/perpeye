@@ -8,7 +8,12 @@ const {
   sendTenMinsNewListingsMessage,
   signalAlert,
 } = require("./src/controller/botMessages");
-const { createUserIfNotExists } = require("./src/controller/usersFun");
+const {
+  createUserIfNotExists,
+  toggleNotification,
+  togglereceiveSignals,
+  togglereceiveNewListions,
+} = require("./src/controller/usersFun");
 require("dotenv/config.js");
 
 const botToken = process.env.BOT_TOKEN;
@@ -68,10 +73,15 @@ bot.onText(/\/start(.*)/, async (msg) => {
   await createUserIfNotExists(data);
 });
 
+const userContext = {};
+
 //handle messages from the user
 bot.on("message", async (msg) => {
   const chatId = msg.chat.id;
   const messageText = msg.text;
+  if (!userContext[chatId]) userContext[chatId] = "main";
+  let context = userContext[chatId];
+
   if (messageText === "Short Signal") {
     //assurance
     bot.sendMessage(chatId, "Fetching short signal... Please wait.");
@@ -79,21 +89,34 @@ bot.on("message", async (msg) => {
     await sendShortSiganl(bot, chatId);
 
     //ending wink
-  } else if (messageText === "Long Signal") {
+  }
+
+  //Long area
+  if (messageText === "Long Signal") {
     //assurance
     bot.sendMessage(chatId, "Fetching long signal... Please wait.");
 
     //fetching long signal
     await sendLongSiganl(bot, chatId);
     //ending wink
-  } else if (messageText === "New Futures") {
+  }
+
+  //New Future
+  if (messageText === "New Futures") {
     await justListedFuturesMessage(bot, chatId);
-  } else if (messageText === "New Futures Shortable") {
+  }
+
+  //Shortable
+  if (messageText === "New Futures Shortable") {
     bot.sendMessage(
       chatId,
       "New Futures Shortable functionality is not implemented yet."
     );
-  } else if (messageText === "Upcoming Futures") {
+  }
+
+  //Upcoming
+  if (messageText === "Upcoming Futures") {
+    userContext[chatId] = "Upcoming Futures";
     const keyBoard = {
       reply_markup: {
         keyboard: [
@@ -110,14 +133,16 @@ bot.on("message", async (msg) => {
       "Please select an exchange to view upcoming futures listings:",
       keyBoard
     );
-  } else if (messageText === "Settings") {
+  }
+
+  //settings area
+  if (messageText === "Settings") {
+    userContext[chatId] = "Settings";
     const keyBoard = {
       reply_markup: {
         keyboard: [
-          ["On Notifications", "Off Notifications"],
-          ["On Daily Signal", "Off Daily Signal"],
-          ["On hourly Signal", "Off hourly Signal"],
-          ["Back to Main Menu"],
+          ["On/Off Notifications", "On/Off Daily Signal"],
+          ["On/Off New Listings N/fication", "Back to Main Menu"],
         ],
         resize_keyboard: true,
         one_time_keyboard: false,
@@ -128,59 +153,84 @@ bot.on("message", async (msg) => {
       "Settings Menu:\nChoose an option to toggle notifications or signals.",
       keyBoard
     );
+  }
 
-    // Handle settings options
-    bot.on("message", (msg) => {
-      const chatId = msg.chat.id;
-      const messageText = msg.text;
-      if (messageText === "On Notifications") {
-        bot.sendMessage(chatId, "Notifications are now ON.");
-      } else if (messageText === "Off Notifications") {
-        bot.sendMessage(chatId, "Notifications are now OFF.");
-      } else if (messageText === "On Daily Signal") {
-        bot.sendMessage(chatId, "Daily Signal is now ON.");
-      } else if (messageText === "Off Daily Signal") {
-        bot.sendMessage(chatId, "Daily Signal is now OFF.");
-      } else if (messageText === "On hourly Signal") {
-        bot.sendMessage(chatId, "Hourly Signal is now ON.");
-      } else if (messageText === "Off hourly Signal") {
-        bot.sendMessage(chatId, "Hourly Signal is now OFF.");
-      }
-    });
-  } else if (messageText === "Created with ❤️ by @solob_dev") {
+  //When theu click me
+  if (messageText === "Created with ❤️ by @solob_dev") {
     bot.sendMessage(
       chatId,
       "Thank you for using our bot! If you have any questions, feel free to ask."
     );
-  } else if (messageText === "Back to Main Menu") {
+  }
+
+  //Go back
+  if (messageText === "Back to Main Menu") {
     const keyBoard = {
       reply_markup: {
         keyboard: [
           ["Short Signal", "Long Signal"],
           ["New Futures", "New Futures Shortable"],
           ["Upcoming Futures", "Settings"],
-          ["Created with ❤️ by @solob"],
+          ["Created with ❤️ by @solob_dev"],
         ],
         resize_keyboard: true,
         one_time_keyboard: false,
       },
     };
     bot.sendMessage(chatId, "Returning to the main menu.", keyBoard);
-  } else if (messageText === "All Exchanges") {
-    await upcomingFuturesMessage(bot, chatId);
-  } else if (messageText === "Binance") {
-    await upcomingFuturesMessage(bot, chatId, "Binance");
-  } else if (messageText === "Bybit") {
-    await upcomingFuturesMessage(bot, chatId, "Bybit");
-  } else if (messageText === "Mexc") {
-    await upcomingFuturesMessage(bot, chatId, "Mexc");
-  } else {
-    if (messageText !== "/start")
-      return bot.sendMessage(
-        chatId,
-        "Please select an option from the keyboard. or use /start"
-      );
   }
+
+  if (context === "Upcoming Futures") {
+    if (messageText === "All Exchanges") {
+      await upcomingFuturesMessage(bot, chatId);
+    } else if (messageText === "Binance") {
+      await upcomingFuturesMessage(bot, chatId, "Binance");
+    } else if (messageText === "Bybit") {
+      await upcomingFuturesMessage(bot, chatId, "Bybit");
+    } else if (messageText === "Mexc") {
+      await upcomingFuturesMessage(bot, chatId, "Mexc");
+    }
+  }
+
+  if (context === "Settings") {
+    // Handle settings options
+    if (messageText === "On/Off Notifications") {
+      const toggled = await toggleNotification(chatId);
+      console.log(toggled);
+
+      const message =
+        toggled === true
+          ? "Notifications are now ON. \n You Will Receive All Notification"
+          : toggled === false
+          ? "Notifications are now OFF. \n You won't receive any notification from this bot"
+          : toggled;
+      bot.sendMessage(chatId, message);
+    } else if (messageText === "On/Off Daily Signal") {
+      const toggled = await togglereceiveSignals(chatId);
+      const message =
+        toggled === true
+          ? "Hourly Signal are now ON. \n You Will Receive hourly signal Notification"
+          : toggled === false
+          ? "Hourly Signal are now OFF. \n You won't receive any signal from this bot"
+          : toggled;
+      bot.sendMessage(chatId, message);
+    } else if (messageText === "On/Off New Listings N/fication") {
+      const toggled = await togglereceiveNewListions(chatId);
+      const message =
+        toggled === true
+          ? "Listing Notice are now ON. \n You Will Receive listings notice Notification"
+          : toggled === false
+          ? "Listings Notice are now OFF. \n You won't receive any Listings notice from this bot"
+          : toggled;
+      bot.sendMessage(chatId, message);
+    }
+  }
+
+  if (!context && messageText !== "/start")
+    return bot.sendMessage(
+      chatId,
+      "Please select an option from the keyboard. or use /start"
+    );
 });
 
 const sendNewListingsNotification = async () => {

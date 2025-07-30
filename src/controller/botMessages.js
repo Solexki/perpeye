@@ -123,7 +123,7 @@ const justListedFuturesMessage = async (bot, chatId) => {
 };
 
 const sendNewListingsMessage = async (bot) => {
-  const users = await getUsers();
+  const users = await getUsers({ listingNotification: true });
   try {
     const listings = await notifyUserForNewListings();
     if (!listings || listings.length < 1) return;
@@ -158,11 +158,10 @@ const sendNewListingsMessage = async (bot) => {
 };
 
 const sendTenMinsNewListingsMessage = async (bot) => {
-  const users = await getUsers();
+  const users = await getUsers({ listingNotification: true });
 
   const listings = await getNewListingsTenMins();
   if (!listings || listings.length < 1) {
-    console.log("No new listings found in the last 10 minutes.");
     return;
   }
   console.log(`Found ${listings.length} new listings in the last 10 minutes.`);
@@ -193,7 +192,7 @@ const sendTenMinsNewListingsMessage = async (bot) => {
 
 async function signalAlert(bot, siganls) {
   if (!siganls || siganls.length < 1) return;
-  const users = await getUsers();
+  const users = await getUsers({ receiveSignalOn: true });
   const message = siganls
     .map((item) => {
       return `${
@@ -214,7 +213,7 @@ async function signalAlert(bot, siganls) {
   for (const user of users) {
     const chatId = user.userId;
     if (!chatId) continue;
- 
+
     //now send message to each user
     await bot.sendMessage(
       chatId,

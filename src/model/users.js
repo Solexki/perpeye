@@ -46,7 +46,7 @@ const usersSchema = {
     type: DataTypes.BOOLEAN,
     defaultValue: true,
   },
-  receiveDailySignals: {
+  receiveNewListingsNotification: {
     type: DataTypes.BOOLEAN,
     defaultValue: true,
   },

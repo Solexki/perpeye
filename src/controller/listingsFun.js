@@ -96,8 +96,6 @@ const notifyUserForNewListings = async () => {
   });
 
   if (!listings.length) {
-    console.log("No new listings found in the next 10 minutes.");
-
     return;
   }
 

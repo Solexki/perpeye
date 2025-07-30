@@ -12,7 +12,7 @@ const {
 
 // This cron job will run every hour to check for new listings and send alerts
 // It will check for new listings every hour and analyze them for trading signals
-cron.schedule("0 * * * *", async () => {
+cron.schedule("0 */4 * * *", async () => {
   const listings = await getNewListings();
   const signals = [];
 
@@ -42,7 +42,7 @@ cron.schedule("0 * * * *", async () => {
   return await notifyUsersOfSignals(signals);
 });
 
-// This cron job will run every 6 hours to remove old listings
+// This cron job will run every 12 hours to remove old listings
 // It will remove listings older than 48 hours
 cron.schedule("0 */12 * * *", async () => {
   await removeOldListing();
