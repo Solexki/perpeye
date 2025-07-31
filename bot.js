@@ -196,8 +196,6 @@ bot.on("message", async (msg) => {
     // Handle settings options
     if (messageText === "On/Off Notifications") {
       const toggled = await toggleNotification(chatId);
-      console.log(toggled);
-
       const message =
         toggled === true
           ? "Notifications are now ON. \n You Will Receive All Notification"
