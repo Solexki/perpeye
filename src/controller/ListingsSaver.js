@@ -24,19 +24,13 @@ const saveListings = async (listings, exchange) => {
       });
       if (created) {
         console.log(`New listing created: ${listing.title} `);
-      } else {
-        console.log(`Listing already exists: ${listing.title}`);
       }
     }
-    if (transaction) {
-      await transaction.commit();
-    }
+    await transaction.commit();
     return;
-  } catch (error) {
-    console.error("Error saving listings:", error);
-    if (transaction) {
-      await transaction.rollback();
-    }
+  } catch (err) {
+          console.log(err)
+          if(transaction) await transaction.rollback()
   }
 };
 

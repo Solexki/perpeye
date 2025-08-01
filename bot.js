@@ -84,7 +84,7 @@ bot.on("message", async (msg) => {
 
   if (messageText === "Short Signal") {
     //assurance
-    bot.sendMessage(chatId, "Fetching short signal... Please wait.");
+    bot.sendMessage(chatId, "Analyzing short signal... Please wait.");
 
     await sendShortSiganl(bot, chatId);
 
@@ -94,7 +94,7 @@ bot.on("message", async (msg) => {
   //Long area
   if (messageText === "Long Signal") {
     //assurance
-    bot.sendMessage(chatId, "Fetching long signal... Please wait.");
+    bot.sendMessage(chatId, "Analyzing long signal... Please wait.");
 
     //fetching long signal
     await sendLongSiganl(bot, chatId);
