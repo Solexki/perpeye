@@ -7,6 +7,20 @@ const {
 const { getUsers } = require("./usersFun");
 const excapeMarkupV2 = require("./utilFun");
 
+const safeMessage = (bot, chatId, message) => {
+  try {
+    bot.sendMessage(chatId, message, {
+      parse_mode: "Markdown",
+    });
+  } catch (error) {
+    if (error.response && error.response.statusCode === 403) {
+      console.error(`User blocked the bot.`);
+    } else {
+      console.error(`Unexpected error for user ${chatId}:`, error.message);
+    }
+  }
+};
+
 const sendShortSiganl = async (bot, chatId) => {
   //fetch now
   try {
@@ -28,10 +42,10 @@ const sendShortSiganl = async (bot, chatId) => {
       .join("\n.......................\n");
 
     //message +=
-    bot.sendMessage(
+    safeMessage(
+      bot,
       chatId,
-      `*🔻Market conditions indicate a potential short opportunity in:.*. \n\n${message} \n\n _⚠️Please do your own research before proceeding_`,
-      { parse_mode: "Markdown" }
+      `*🔻Market conditions indicate a potential short opportunity in:.*. \n\n${message} \n\n _⚠️Please do your own research before proceeding_`
     );
   } catch (err) {
     console.error(err);
@@ -59,10 +73,10 @@ const sendLongSiganl = async (bot, chatId) => {
       .join("\n............................................\n");
 
     //message +=
-    bot.sendMessage(
+    safeMessage(
+      bot,
       chatId,
-      `*💹Market conditions indicate a potential short opportunity in. *. \n\n${message}\n\n _⚠️Please do your own research before proceeding_`,
-      { parse_mode: "Markdown" }
+      `*💹Market conditions indicate a potential short opportunity in. *. \n\n${message}\n\n _⚠️Please do your own research before proceeding_`
     );
   } catch (error) {
     console.error(err);
@@ -80,7 +94,8 @@ const upcomingFuturesMessage = async (bot, chatId, exchange = "all") => {
       (listing) => exchange === "all" || listing.exchange === exchange
     );
     if (!filteredListings || filteredListings.length < 1) {
-      return bot.sendMessage(
+      return safeMessage(
+        bot,
         chatId,
         `No upcoming futures listings found for ${exchange}.`
       );
@@ -136,9 +151,8 @@ const justListedFuturesMessage = async (bot, chatId) => {
         ).toLocaleString()}\n_Exchange:_ *${exchange}*\n`;
       })
       .join("\n\n");
-    bot.sendMessage(chatId, `*Recent Futures Listings:* \n\n${messageText}`, {
-      parse_mode: "Markdown",
-    });
+
+    safeMessage(bot, chatId, `*Recent Futures Listings:* \n\n${messageText}`);
   } catch (err) {
     console.error(err);
   }
@@ -166,12 +180,10 @@ const sendNewListingsMessage = async (bot) => {
 
     //tell all users
     for (const user of users) {
-      bot.sendMessage(
+      safeMessage(
+        bot,
         user.userId,
-        `*Upcoming Listing Alert:* \n\n${messageText}`,
-        {
-          parse_mode: "Markdown",
-        }
+        `*Upcoming Listing Alert:* \n\n${messageText}`
       );
     }
   } catch (error) {
@@ -209,9 +221,11 @@ const sendTenMinsNewListingsMessage = async (bot) => {
     for (const user of users) {
       const chatId = user.userId;
       if (!chatId) continue; // Skip if chatId is not available
-      bot.sendMessage(chatId, `*New Listing Alert:* \n\n${messageText}`, {
-        parse_mode: "Markdown",
-      });
+      safeMessage(
+        bot,
+        chatId,
+        `*New Listing Alert:* \n\n${messageText}``*New Listing Alert:* \n\n${messageText}`
+      );
     }
   } catch (err) {
     console.error(err);
@@ -244,10 +258,10 @@ async function signalAlert(bot, siganls) {
       if (!chatId) continue;
 
       //now send message to each user
-      await bot.sendMessage(
+      safeMessage(
+        bot,
         chatId,
-        `${message}\n\n _⚠️Please make sure to carry out additional analysis, what you see here are mere trade suggestion!_`,
-        { parse_mode: "Markdown" }
+        `${message}\n\n _⚠️Please make sure to carry out additional analysis, what you see here are mere trade suggestion!_`
       );
     }
   } catch (err) {
