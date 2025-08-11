@@ -4,9 +4,6 @@ const {
   sendLongSiganl,
   upcomingFuturesMessage,
   justListedFuturesMessage,
-  sendNewListingsMessage,
-  sendTenMinsNewListingsMessage,
-  signalAlert,
 } = require("./src/controller/botMessages");
 const {
   createUserIfNotExists,
@@ -231,20 +228,7 @@ bot.on("message", async (msg) => {
     );
 });
 
-const sendNewListingsNotification = async () => {
-  await sendNewListingsMessage(bot);
-};
-
-const notifyUserOfTenMinAlert = async () => {
-  await sendTenMinsNewListingsMessage(bot);
-};
-const notifyUsersOfSignals = async (signals) => {
-  await signalAlert(bot, signals);
-};
-
 module.exports = {
+  bot,
   setWebhook,
-  sendNewListingsNotification,
-  notifyUserOfTenMinAlert,
-  notifyUsersOfSignals,
 };

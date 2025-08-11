@@ -5,14 +5,17 @@ const detectSignalType = require("./src/controller/patternDetector");
 const { fetchAllListings } = require("./src/controller/fetchNewListings");
 const { removeOldListing } = require("./src/controller/listingsFun");
 const {
-  sendNewListingsNotification,
-  notifyUserOfTenMinAlert,
-  notifyUsersOfSignals,
-} = require("./bot");
+  sendNewListingsMessage,
+  sendTenMinsNewListingsMessage,
+  signalAlert,
+} = require("./src/controller/botMessages");
+const { postSignalsThread } = require("./xApi.mjs");
 
 // This cron job will run every hour to check for new listings and send alerts
 // It will check for new listings every hour and analyze them for trading signals
-cron.schedule("0 */4 * * *", async () => {
+//"0 */4 * * *
+cron.schedule("*/1 * * * *", async () => {
+  console.log("getting lis");
   const listings = await getNewListings();
   const signals = [];
 
@@ -35,11 +38,13 @@ cron.schedule("0 */4 * * *", async () => {
       console.error(`❌ Error processing ${coin.symbol}:`, err.message);
     }
   }
-  console.log("✅ Signal scan complete.\n");
+  console.log("✅ Signal scan complete.\n", signals);
   if (!signals || signals.length < 1) {
     return;
   }
-  return await notifyUsersOfSignals(signals);
+  await postSignalsThread(signals);
+  await signalAlert(signals);
+  return;
 });
 
 // This cron job will run every 12 hours to remove old listings
@@ -73,9 +78,10 @@ cron.schedule(
 
 //this cron job will run every fourty minute to send notifications for new listings
 cron.schedule("*/40 * * * *", async () => {
-  await sendNewListingsNotification();
+  await sendNewListingsMessage();
 });
 
 cron.schedule("*/20 * * * *", async () => {
-  await notifyUserOfTenMinAlert();
+  await sendTenMinsNewListingsMessage();
 });
+

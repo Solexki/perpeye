@@ -5,33 +5,20 @@ const {
   getNewListingsTenMins,
 } = require("./listingsFun");
 const { getUsers } = require("./usersFun");
-const excapeMarkupV2 = require("./utilFun");
+const { excapeMarkupV2, safeMessage } = require("./utilFun");
 
-const safeMessage = (bot, chatId, message) => {
-  try {
-    bot.sendMessage(chatId, message, {
-      parse_mode: "Markdown",
-    });
-  } catch (error) {
-    if (error.response && error.response.statusCode === 403) {
-      console.error(`User blocked the bot.`);
-    } else {
-      console.error(`Unexpected error for user ${chatId}:`, error.message);
-    }
-  }
-};
-
-const sendShortSiganl = async (bot, chatId) => {
+const sendShortSiganl = async (chatId) => {
   //fetch now
   try {
     const shortCall = await shortSignal();
     // Check if shortCall is empty or undefined. right?
     if (!shortCall || shortCall.length < 1) {
-      return bot.sendMessage(
+      return safeMessage(
         chatId,
         "No short signal detected at the moment. Please try again later."
       );
     }
+
     // Format the message to send
     const message = shortCall
       .map((call) => {
@@ -43,7 +30,6 @@ const sendShortSiganl = async (bot, chatId) => {
 
     //message +=
     safeMessage(
-      bot,
       chatId,
       `*🔻Market conditions indicate a potential short opportunity in:.*. \n\n${message} \n\n _⚠️Please do your own research before proceeding_`
     );
@@ -52,13 +38,13 @@ const sendShortSiganl = async (bot, chatId) => {
   }
 };
 
-const sendLongSiganl = async (bot, chatId) => {
+const sendLongSiganl = async (chatId) => {
   try {
     //fetch now
     const longCall = await longSignal();
     // Check if shortCall is empty or undefined. right?
     if (!longCall || longCall.length < 1) {
-      return bot.sendMessage(
+      return safeMessage(
         chatId,
         "No Long signal detected at the moment. Please try again later."
       );
@@ -74,7 +60,6 @@ const sendLongSiganl = async (bot, chatId) => {
 
     //message +=
     safeMessage(
-      bot,
       chatId,
       `*💹Market conditions indicate a potential short opportunity in. *. \n\n${message}\n\n _⚠️Please do your own research before proceeding_`
     );
@@ -83,11 +68,11 @@ const sendLongSiganl = async (bot, chatId) => {
   }
 };
 
-const upcomingFuturesMessage = async (bot, chatId, exchange = "all") => {
+const upcomingFuturesMessage = async (chatId, exchange = "all") => {
   try {
     const listings = await upcomingFutures();
     if (!listings || listings.length < 1) {
-      return bot.sendMessage(chatId, "No upcoming futures listings found.");
+      return safeMessage(chatId, "No upcoming futures listings found.");
     }
 
     const filteredListings = listings.filter(
@@ -95,7 +80,6 @@ const upcomingFuturesMessage = async (bot, chatId, exchange = "all") => {
     );
     if (!filteredListings || filteredListings.length < 1) {
       return safeMessage(
-        bot,
         chatId,
         `No upcoming futures listings found for ${exchange}.`
       );
@@ -117,23 +101,17 @@ const upcomingFuturesMessage = async (bot, chatId, exchange = "all") => {
       })
       .join("\n.................................\n");
 
-    bot.sendMessage(
-      chatId,
-      `*📢Upcoming Futures Listings:* \n\n${messageText}`,
-      {
-        parse_mode: "Markdown",
-      }
-    );
+    safeMessage(chatId, `*📢Upcoming Futures Listings:* \n\n${messageText}`);
   } catch (err) {
     console.error(err);
   }
 };
 
-const justListedFuturesMessage = async (bot, chatId) => {
+const justListedFuturesMessage = async (chatId) => {
   try {
     const listings = await justListed();
     if (!listings || listings.length < 1) {
-      return bot.sendMessage(chatId, "No upcoming futures listings found.");
+      return safeMessage(chatId, "No upcoming futures listings found.");
     }
     const messageText = listings
       .map(({ title, id, exchange, listingDate }, index) => {
@@ -152,13 +130,13 @@ const justListedFuturesMessage = async (bot, chatId) => {
       })
       .join("\n\n");
 
-    safeMessage(bot, chatId, `*Recent Futures Listings:* \n\n${messageText}`);
+    safeMessage(chatId, `*Recent Futures Listings:* \n\n${messageText}`);
   } catch (err) {
     console.error(err);
   }
 };
 
-const sendNewListingsMessage = async (bot) => {
+const sendNewListingsMessage = async () => {
   try {
     const users = await getUsers({ listingNotification: true });
     const listings = await notifyUserForNewListings();
@@ -180,18 +158,15 @@ const sendNewListingsMessage = async (bot) => {
 
     //tell all users
     for (const user of users) {
-      safeMessage(
-        bot,
-        user.userId,
-        `*Upcoming Listing Alert:* \n\n${messageText}`
-      );
+      safeMessage(user.userId, `*Upcoming Listing Alert:* \n\n${messageText}`);
     }
+    postTweet(messageText);
   } catch (error) {
     console.error("Error sending new listings message:", error);
   }
 };
 
-const sendTenMinsNewListingsMessage = async (bot) => {
+const sendTenMinsNewListingsMessage = async () => {
   try {
     const users = await getUsers({ listingNotification: true });
 
@@ -221,18 +196,15 @@ const sendTenMinsNewListingsMessage = async (bot) => {
     for (const user of users) {
       const chatId = user.userId;
       if (!chatId) continue; // Skip if chatId is not available
-      safeMessage(
-        bot,
-        chatId,
-        `*New Listing Alert:* \n\n${messageText}``*New Listing Alert:* \n\n${messageText}`
-      );
+      safeMessage(chatId, `*New Listing Alert:* \n\n${messageText}`);
     }
+    postTweet(`*New Listing Alert:* \n\n${messageText}`);
   } catch (err) {
     console.error(err);
   }
 };
 
-async function signalAlert(bot, siganls) {
+async function signalAlert(siganls) {
   try {
     if (!siganls || siganls.length < 1) return;
     const users = await getUsers({ receiveSignalOn: true });
@@ -252,6 +224,9 @@ async function signalAlert(bot, siganls) {
       })
       .join("\n ............................\n\n");
 
+    //post to twitter
+    console.log(message.replace(/[*_`~]/g, ""));
+    // await postTweet(message);
     if (!users) return;
     for (const user of users) {
       const chatId = user.userId;
@@ -259,7 +234,6 @@ async function signalAlert(bot, siganls) {
 
       //now send message to each user
       safeMessage(
-        bot,
         chatId,
         `${message}\n\n _⚠️Please make sure to carry out additional analysis, what you see here are mere trade suggestion!_`
       );

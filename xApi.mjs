@@ -1,39 +1,45 @@
-const { bot } = require("../../bot");
+import { TwitterApi } from "twitter-api-v2";
 
-function excapeMarkupV2(text) {
-  return text.replace(/_/g, "\\_");
-}
+const client = new TwitterApi({
+  appKey: process.env.TWITTER_API_KEY,
+  appSecret: process.env.TWITTER_API_SECRET,
+  accessToken: process.env.TWITTER_ACCESS_TOKEN,
+  accessSecret: process.env.TWITTER_ACCESS_SECRET,
+});
 
-const safeMessage = (chatId, message) => {
+export const postTweet = async (message) => {
+  console.log("sending..", message);
+
   try {
-    bot?.sendMessage(chatId, message, {
-      parse_mode: "Markdown",
-    });
+    if (!message) return;
+    const { data } = await client.v2.tweet(message.replace(/\/*_\\/g, ""));
+    console.log(`✅ Tweet posted: https://twitter.com/user/status/${data.id}`);
   } catch (error) {
-    if (error.response && error.response.statusCode === 403) {
-      console.error(`User blocked the bot.`);
-    } else {
-      console.error(`Unexpected error for user ${chatId}:`, error.message);
-    }
+    console.error("❌ Error posting tweets:", error);
   }
 };
 
-/**
- * Post crypto signals to Twitter as a thread.
- * @param {object} client - An instance of TwitterApi (twitter-api-v2)
- * @param {Array} signals - Array of signal objects
- */
-async function postSignalsThread(signals) {
-  if (!xClient?.v2?.tweet) {
+export const postSignalsThread = async (signals) => {
+  if (!client?.v2?.tweet) {
     throw new Error("Invalid TwitterApi client instance.");
   }
 
   const hour = new Date().getHours().toLocaleString();
   const hour12 = hour % 12 || 12;
   const surfix = hour < 12 ? "am" : "pm";
+  const now = new Date();
+  const dateString = now.toLocaleDateString("en-US", {
+    month: "short",
+    day: "numeric",
+  });
+  const timeString = now
+    .toLocaleTimeString("en-US", { hour: "numeric", hour12: true })
+    .toLowerCase();
+
   // First tweet (thread starter)
-  const introTweet = `${hour12} ${surfix} tradable coin 🚀
-Below are analysis coins tradable for this hour.
+  const introTweet = `${hour12} ${surfix} ${signals.length} tradable coins for ${dateString} 🚀.
+Below are analysis coins tradable today.
+
 Please carry out additional research before trading. 🧵
 
 #CryptoSignals #CryptoTrading #Bitcoin #Altcoins`;
@@ -43,7 +49,6 @@ Please carry out additional research before trading. 🧵
   try {
     const introRes = await client.v2.tweet({ text: introTweet });
     replyToId = introRes.data.id;
-    console.log(`✅ Intro tweet posted: ${introTweet}`);
   } catch (err) {
     console.error("❌ Error posting intro tweet:", err);
     return;
@@ -58,7 +63,7 @@ Please carry out additional research before trading. 🧵
         : "📈 Market showing strength: 3 higher lows + vol up.";
 
     const tweet = `${direction} SIGNAL for $${item.symbol.toUpperCase()}
-Price: $${item.price}
+Price: ${item.price} $USDT
 ${description}
 Confidence: ${item.confidence}%
 #CryptoSignals #CryptoTrading #DayTrading`;
@@ -79,9 +84,4 @@ Confidence: ${item.confidence}%
       console.error("❌ Error posting tweet:", err);
     }
   }
-}
-
-module.exports = {
-  excapeMarkupV2,
-  safeMessage,
 };
