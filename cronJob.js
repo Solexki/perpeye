@@ -9,7 +9,7 @@ const {
   sendTenMinsNewListingsMessage,
   signalAlert,
 } = require("./src/controller/botMessages");
-const { postSignalsThread } = require("./xApi.mjs");
+const { postSignalsThread } = require("./xApi.js");
 
 // This cron job will run every hour to check for new listings and send alerts
 // It will check for new listings every hour and analyze them for trading signals
