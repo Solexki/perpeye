@@ -100,7 +100,7 @@ bot.on("message", async (msg) => {
 
   //New Future
   if (messageText === "New Futures") {
-    await justListedFuturesMessage(bot, chatId);
+    await justListedFuturesMessage(chatId);
   }
 
   //Shortable
@@ -179,13 +179,13 @@ bot.on("message", async (msg) => {
 
   if (context === "Upcoming Futures") {
     if (messageText === "All Exchanges") {
-      await upcomingFuturesMessage(bot, chatId);
+      await upcomingFuturesMessage(chatId);
     } else if (messageText === "Binance") {
-      await upcomingFuturesMessage(bot, chatId, "Binance");
+      await upcomingFuturesMessage(chatId, "Binance");
     } else if (messageText === "Bybit") {
-      await upcomingFuturesMessage(bot, chatId, "Bybit");
+      await upcomingFuturesMessage(chatId, "Bybit");
     } else if (messageText === "Mexc") {
-      await upcomingFuturesMessage(bot, chatId, "Mexc");
+      await upcomingFuturesMessage(chatId, "Mexc");
     }
   }
 

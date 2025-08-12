@@ -101,7 +101,6 @@ const upcomingFuturesMessage = async (chatId, exchange = "all") => {
         ).toLocaleString()}\n_Exchange:_ *${exchange}*\n`;
       })
       .join("\n.................................\n");
-
     safeMessage(chatId, `*📢Upcoming Futures Listings:* \n\n${messageText}`);
   } catch (err) {
     console.error(err);
@@ -130,7 +129,6 @@ const justListedFuturesMessage = async (chatId) => {
         ).toLocaleString()}\n_Exchange:_ *${exchange}*\n`;
       })
       .join("\n\n");
-
     safeMessage(chatId, `*Recent Futures Listings:* \n\n${messageText}`);
   } catch (err) {
     console.error(err);
