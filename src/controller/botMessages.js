@@ -160,7 +160,7 @@ const sendNewListingsMessage = async () => {
     for (const user of users) {
       safeMessage(user.userId, `*Upcoming Listing Alert:* \n\n${messageText}`);
     }
-    postTweet(messageText);
+    await postTweet(messageText);
   } catch (error) {
     console.error("Error sending new listings message:", error);
   }
@@ -198,7 +198,7 @@ const sendTenMinsNewListingsMessage = async () => {
       if (!chatId) continue; // Skip if chatId is not available
       safeMessage(chatId, `*New Listing Alert:* \n\n${messageText}`);
     }
-    postTweet(`*New Listing Alert:* \n\n${messageText}`);
+    await postTweet(`*New Listing Alert:* \n\n${messageText}`);
   } catch (err) {
     console.error(err);
   }
@@ -226,7 +226,6 @@ async function signalAlert(siganls) {
 
     //post to twitter
     console.log(message.replace(/[*_`~]/g, ""));
-    // await postTweet(message);
     if (!users) return;
     for (const user of users) {
       const chatId = user.userId;

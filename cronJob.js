@@ -15,7 +15,6 @@ const { postSignalsThread } = require("./xApi.js");
 // It will check for new listings every hour and analyze them for trading signals
 //"*/1 * * * *
 cron.schedule("0 */4 * * *", async () => {
-  console.log("getting lis");
   const listings = await getNewListings();
   const signals = [];
 

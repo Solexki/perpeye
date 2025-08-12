@@ -13,7 +13,6 @@ async function intitTwitter() {
 }
 
  const postTweet = async (message) => {
-   console.log("sending..", message);
    const c = await intitTwitter();
    try {
      if (!message) return;
