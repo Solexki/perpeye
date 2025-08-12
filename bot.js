@@ -83,7 +83,7 @@ bot.on("message", async (msg) => {
     //assurance
     bot.sendMessage(chatId, "Analyzing short signal... Please wait.");
 
-    await sendShortSiganl(bot, chatId);
+    await sendShortSiganl(chatId);
 
     //ending wink
   }
@@ -94,9 +94,9 @@ bot.on("message", async (msg) => {
     bot.sendMessage(chatId, "Analyzing long signal... Please wait.");
 
     //fetching long signal
-    await sendLongSiganl(bot, chatId);
+    await sendLongSiganl(chatId);
     //ending wink
-  }
+  } 
 
   //New Future
   if (messageText === "New Futures") {

@@ -6,6 +6,7 @@ const {
 } = require("./listingsFun");
 const { getUsers } = require("./usersFun");
 const { excapeMarkupV2, safeMessage } = require("./utilFun");
+const { postTweet } = require("../../xApi");
 
 const sendShortSiganl = async (chatId) => {
   //fetch now

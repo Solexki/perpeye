@@ -1,10 +1,9 @@
-const { bot } = require("../../bot");
-
 function excapeMarkupV2(text) {
   return text.replace(/_/g, "\\_");
 }
 
 const safeMessage = (chatId, message) => {
+  const { bot } = require("../../bot");
   try {
     bot?.sendMessage(chatId, message, {
       parse_mode: "Markdown",
@@ -17,69 +16,6 @@ const safeMessage = (chatId, message) => {
     }
   }
 };
-
-/**
- * Post crypto signals to Twitter as a thread.
- * @param {object} client - An instance of TwitterApi (twitter-api-v2)
- * @param {Array} signals - Array of signal objects
- */
-async function postSignalsThread(signals) {
-  if (!xClient?.v2?.tweet) {
-    throw new Error("Invalid TwitterApi client instance.");
-  }
-
-  const hour = new Date().getHours().toLocaleString();
-  const hour12 = hour % 12 || 12;
-  const surfix = hour < 12 ? "am" : "pm";
-  // First tweet (thread starter)
-  const introTweet = `${hour12} ${surfix} tradable coin 🚀
-Below are analysis coins tradable for this hour.
-Please carry out additional research before trading. 🧵
-
-#CryptoSignals #CryptoTrading #Bitcoin #Altcoins`;
-
-  let replyToId = null;
-
-  try {
-    const introRes = await client.v2.tweet({ text: introTweet });
-    replyToId = introRes.data.id;
-    console.log(`✅ Intro tweet posted: ${introTweet}`);
-  } catch (err) {
-    console.error("❌ Error posting intro tweet:", err);
-    return;
-  }
-
-  // Post each signal as part of the thread
-  for (const item of signals) {
-    const direction = item.signalType === "long" ? "🟢 LONG" : "🔻 SHORT";
-    const description =
-      item.signalType === "short"
-        ? "🔻 Market showing weakness: 3 lower highs + vol drop."
-        : "📈 Market showing strength: 3 higher lows + vol up.";
-
-    const tweet = `${direction} SIGNAL for $${item.symbol.toUpperCase()}
-Price: $${item.price}
-${description}
-Confidence: ${item.confidence}%
-#CryptoSignals #CryptoTrading #DayTrading`;
-
-    if (tweet.length > 280) {
-      console.warn(`Tweet too long (${tweet.length} chars), skipping:`, tweet);
-      continue;
-    }
-
-    try {
-      const res = await client.v2.tweet({
-        text: tweet,
-        reply: { in_reply_to_tweet_id: replyToId },
-      });
-      replyToId = res.data.id;
-      console.log(`✅ Tweet posted: ${tweet}`);
-    } catch (err) {
-      console.error("❌ Error posting tweet:", err);
-    }
-  }
-}
 
 module.exports = {
   excapeMarkupV2,
