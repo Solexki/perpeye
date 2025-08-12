@@ -37,7 +37,7 @@ cron.schedule("0 */4 * * *", async () => {
       console.error(`❌ Error processing ${coin.symbol}:`, err.message);
     }
   }
-  console.log("✅ Signal scan complete.\n", signals);
+  console.log("✅ Signal scan complete.\n");
   if (!signals || signals.length < 1) {
     return;
   }

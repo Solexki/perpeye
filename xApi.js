@@ -39,10 +39,10 @@ async function intitTwitter() {
    });
 
    // First tweet (thread starter)
-   const introTweet = `${hour12}${surfix} Watchlist — ${signals.length} Hot Coins for ${dateString} 🚀.
-Fresh market analysis for ${dateString}, straight from our scanner. 
+   const introTweet = `${hour12}${surfix} Watchlist - ${signals.length} Hot Coins for ${dateString} 🚀.
+Fresh market analysis, straight from our scanner. 
 
-Your next setup might be in here — but always DYOR before entering a trade. 🧵
+Your next setup might be in here - but always DYOR before entering a trade. 🧵
 
 #CryptoSignals #CryptoTrading #Bitcoin #Altcoins`;
 
@@ -64,7 +64,9 @@ Your next setup might be in here — but always DYOR before entering a trade. �
          ? "🔻 Market showing weakness: 3 lower highs + vol drop."
          : "📈 Market showing strength: 3 higher lows + vol up.";
 
-     const tweet = `${direction} SIGNAL for $${item.symbol.toUpperCase()}
+     const tweet = `${direction} SIGNAL for $${
+       item.symbol.toUpperCase().match(/^(.*)USDT$/)[1]
+     }
 Price: ${item.price} $USDT
 ${description}
 Confidence: ${item.confidence}%
