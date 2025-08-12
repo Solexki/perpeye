@@ -13,8 +13,8 @@ const { postSignalsThread } = require("./xApi.mjs");
 
 // This cron job will run every hour to check for new listings and send alerts
 // It will check for new listings every hour and analyze them for trading signals
-//"0 */4 * * *
-cron.schedule("*/1 * * * *", async () => {
+//"*/1 * * * *
+cron.schedule("0 */4 * * *", async () => {
   console.log("getting lis");
   const listings = await getNewListings();
   const signals = [];

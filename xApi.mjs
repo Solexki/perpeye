@@ -1,18 +1,23 @@
-import { TwitterApi } from "twitter-api-v2";
+let client = null;
 
-const client = new TwitterApi({
-  appKey: process.env.TWITTER_API_KEY,
-  appSecret: process.env.TWITTER_API_SECRET,
-  accessToken: process.env.TWITTER_ACCESS_TOKEN,
-  accessSecret: process.env.TWITTER_ACCESS_SECRET,
-});
+async function intitTwitter() {
+  if (client) return client;
+  const { TwitterApi } = await import("twitter-api-v2");
+  client = new TwitterApi({
+    appKey: process.env.TWITTER_API_KEY,
+    appSecret: process.env.TWITTER_API_SECRET,
+    accessToken: process.env.TWITTER_ACCESS_TOKEN,
+    accessSecret: process.env.TWITTER_ACCESS_SECRET,
+  });
+  return client;
+}
 
 export const postTweet = async (message) => {
   console.log("sending..", message);
-
+  const c = await intitTwitter();
   try {
     if (!message) return;
-    const { data } = await client.v2.tweet(message.replace(/\/*_\\/g, ""));
+    const { data } = await c.v2.tweet(message.replace(/\/*_\\/g, ""));
     console.log(`✅ Tweet posted: https://twitter.com/user/status/${data.id}`);
   } catch (error) {
     console.error("❌ Error posting tweets:", error);
@@ -20,7 +25,8 @@ export const postTweet = async (message) => {
 };
 
 export const postSignalsThread = async (signals) => {
-  if (!client?.v2?.tweet) {
+  const c = await intitTwitter();
+  if (!c?.v2?.tweet) {
     throw new Error("Invalid TwitterApi client instance.");
   }
 
@@ -32,22 +38,19 @@ export const postSignalsThread = async (signals) => {
     month: "short",
     day: "numeric",
   });
-  const timeString = now
-    .toLocaleTimeString("en-US", { hour: "numeric", hour12: true })
-    .toLowerCase();
 
   // First tweet (thread starter)
-  const introTweet = `${hour12} ${surfix} ${signals.length} tradable coins for ${dateString} 🚀.
-Below are analysis coins tradable today.
+  const introTweet = `${hour12}${surfix} Watchlist — ${signals.length} Hot Coins for ${dateString} 🚀.
+Fresh market analysis for ${dateString}, straight from our scanner. 
 
-Please carry out additional research before trading. 🧵
+Your next setup might be in here — but always DYOR before entering a trade. 🧵
 
 #CryptoSignals #CryptoTrading #Bitcoin #Altcoins`;
 
   let replyToId = null;
 
   try {
-    const introRes = await client.v2.tweet({ text: introTweet });
+    const introRes = await c.v2.tweet({ text: introTweet });
     replyToId = introRes.data.id;
   } catch (err) {
     console.error("❌ Error posting intro tweet:", err);
@@ -74,7 +77,7 @@ Confidence: ${item.confidence}%
     }
 
     try {
-      const res = await client.v2.tweet({
+      const res = await c.v2.tweet({
         text: tweet,
         reply: { in_reply_to_tweet_id: replyToId },
       });
