@@ -7,6 +7,7 @@ const saveListings = async (listings, exchange) => {
     transaction = await sequelizeIntance.transaction();
     if (listings.length < 1) {
       console.log(`No upcoming futures listings found on ${exchange}.`);
+      await transaction.rollback();
       return [];
     }
     for (const article of listings) {
