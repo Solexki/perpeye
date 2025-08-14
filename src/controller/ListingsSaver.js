@@ -26,6 +26,9 @@ const saveListings = async (listings, exchange) => {
       if (created) {
         console.log(`New listing created: ${listing.title} `);
       }
+      if (listing) {
+        console.log("Listing Already Existing:", listing);
+      }
     }
     await transaction.commit();
     return;
